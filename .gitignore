@@ -13,3 +13,7 @@ Thumbs.db
 
 # Ignore editor/IDE config files
 .vscode/
+
+# Ignore test data files
+*.csv
+*.json
