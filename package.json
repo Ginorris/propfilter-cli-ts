@@ -4,16 +4,16 @@
   },
   "name": "propfilter-cli-ts",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A CLI tool for filtering real estate properties by various criteria.",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "build": "tsc",
     "start": "node dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["real estate", "cli", "filter", "property", "search"],
+  "author": "Ginorris",
+  "license": "MIT",
   "devDependencies": {
     "@types/commander": "^2.12.0",
     "@types/jest": "^29.5.14",

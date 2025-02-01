@@ -25,22 +25,41 @@ function setupCLI(): Command {
         chalk.yellow('  cat properties.json | propfilter --json "amenities == pool,garage"'),
       );
 
-      console.log("\n" + chalk.blue("📍 Location Filtering:"));
-      console.log(
-        chalk.yellow(
-          '  propfilter dataset.csv "location <= 10,45,50" (Filter by latitude, longitude, and max distance in km)',
-        ),
-      );
-
       console.log("\n" + chalk.blue("⚡ Supported Operators:"));
-      console.log(
-        chalk.cyan("  ==   !=   >   <   >=   <=   ~= (contains)  location <= lat,lng,distance"),
-      );
+      console.log(chalk.cyan("  ==   !=   >   <   >=   <=   ~= (substring match)"));
 
       console.log("\n" + chalk.blue("💡 Notes:"));
       console.log(chalk.magenta("  - Multiple filters use AND logic (all conditions must match)."));
-      console.log(chalk.magenta("  - Use quotes for filters containing spaces."));
-      console.log(chalk.magenta("  - The '--json' flag outputs raw JSON results."));
+      console.log(
+        chalk.magenta(
+          '  - Use quotes for filters containing spaces (e.g. "description ~= big yard").',
+        ),
+      );
+      console.log(
+        chalk.magenta("  - The '--json' flag outputs raw JSON instead of pretty-printed data."),
+      );
+
+      // Minimal CSV example
+      console.log("\n" + chalk.blue("🗂 CSV Example:"));
+      console.log(
+        chalk.white(`  squareFootage,price,location,amenities
+  1500,300000,"(40.7128,-74.006)","{'garage': True, 'pool': False}"`),
+      );
+
+      // Minimal JSON example
+      console.log("\n" + chalk.blue("🗄 JSON Example:"));
+      console.log(
+        chalk.white(`  [
+    {
+      "squareFootage": 1500,
+      "price": 300000,
+      "location": [40.7128, -74.006],
+      "amenities": {"garage": true, "pool": false}
+    }
+  ]`),
+      );
+
+      console.log();
     });
 
   return program;
@@ -115,8 +134,8 @@ async function main() {
     } else {
       displayResults(result);
     }
-  } catch (error) {
-    console.error(`Error: ${(error as Error).message}`);
+  } catch (err) {
+    console.error(chalk.red("Error:"), chalk.red((err as Error).message));
     process.exit(1);
   }
 }

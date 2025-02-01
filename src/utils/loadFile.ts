@@ -3,6 +3,7 @@ import path from "path";
 import { parse, CastingContext } from "csv-parse/sync";
 import { Property } from "../types/Property";
 import { NUMERIC_FIELDS } from "../constants/filtersConfig";
+import { csvErrorMessage, jsonErrorMessage } from "../constants/errorMessages";
 
 /**
  * Reads data from stdin (if available).
@@ -66,15 +67,23 @@ export function loadProperties(input?: string, filePath?: string): Property[] {
   const rawData = fs.readFileSync(filePath, "utf-8");
 
   if (fileExt === ".json") {
-    return JSON.parse(rawData);
+    try {
+      return JSON.parse(rawData);
+    } catch (err) {
+      throw new Error(jsonErrorMessage((err as Error).message));
+    }
   }
 
   if (fileExt === ".csv") {
-    return parse(rawData, {
-      columns: true,
-      skip_empty_lines: true,
-      cast: csvCast,
-    }) as Property[];
+    try {
+      return parse(rawData, {
+        columns: true,
+        skip_empty_lines: true,
+        cast: csvCast,
+      }) as Property[];
+    } catch (err) {
+      throw new Error(csvErrorMessage((err as Error).message));
+    }
   }
   throw new Error("Unsupported file format. Use .json or .csv.");
 }
