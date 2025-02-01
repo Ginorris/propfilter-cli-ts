@@ -16,24 +16,24 @@ This will show you all available options and usage examples.
 
 ### **Basic Filtering**
 ```bash
-propfilter sample.csv "price > 400000"
+propfilter .devcontainer/sample.csv "price > 400000"
 ```
 Filters properties where the price is greater than 400,000.
 
 ```bash
-propfilter sample.csv "lighting == high" "rooms >= 3"
+propfilter .devcontainer/sample.csv "lighting == high" "rooms >= 3"
 ```
 Filters properties with high lighting and at least 3 rooms.
 
 ### **Filtering by Location**
 ```bash
-propfilter sample.csv "location <= 37.7749,-122.4194,10"
+propfilter .devcontainer/sample.csv "location <= 37.7749,-122.4194,10"
 ```
 Finds properties within a 10 km radius of (37.7749, -122.4194).
 
 ### **Using JSON Output**
 ```bash
-propfilter sample.csv "amenities == pool,garage" --json
+propfilter .devcontainer/sample.csv "amenities == pool,garage" --json
 ```
 Outputs results as JSON instead of a table.
 
