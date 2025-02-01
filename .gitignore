@@ -17,3 +17,6 @@ Thumbs.db
 # Ignore test data files
 *.csv
 *.json
+
+# Ignore Jest coverage reports
+coverage/

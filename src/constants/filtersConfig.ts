@@ -21,4 +21,4 @@ export const VALID_OPERATORS = ["==", "!=", "<=", ">=", "<", ">", "~="];
 
 // Regex capturing: (key)(operator)(value), allowing spaces around the operator
 // e.g. "price > 1", "description~=renovated", "amenities == pool,garage"
-export const FILTER_REGEX = /^(\w+)\s*(==|!=|<=|>=|<|>|~=)\s*(.+)$/;
+export const FILTER_REGEX = new RegExp(`^(\\w+)\\s*(${VALID_OPERATORS.join("|")})\\s*(.+)$`);

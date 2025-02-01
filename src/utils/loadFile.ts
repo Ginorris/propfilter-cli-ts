@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { parse } from "csv-parse/sync";
-import { Property, NUMERIC_FIELDS } from "../types/Property";
+import { Property } from "../types/Property";
+import { NUMERIC_FIELDS } from "../constants/filtersConfig";
 
 /**
  * Reads data from stdin (if available).
