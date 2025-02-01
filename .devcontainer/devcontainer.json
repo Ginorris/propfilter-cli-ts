@@ -1,0 +1,20 @@
+{
+    "name": "PropFilter CLI Dev Environment",
+    "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+    "features": {
+      "ghcr.io/devcontainers/features/node:1": {
+        "version": "20"
+      }
+    },
+    "postCreateCommand": "npm install && npm run build && npm link && echo '✅ PropFilter is ready! Run `propfilter --help` to get started.' && propfilter --help",
+    "customizations": {
+      "vscode": {
+        "settings": {
+          "terminal.integrated.defaultProfile.linux": "bash"
+        },
+        "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+      }
+    },
+    "remoteUser": "node"
+  }
+  
