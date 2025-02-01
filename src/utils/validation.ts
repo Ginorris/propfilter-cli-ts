@@ -1,6 +1,5 @@
 import { FilterCondition, Property } from "../types/Property";
 import {
-  VALID_OPERATORS,
   VALID_LIGHTING_VALUES,
   NUMERIC_FIELDS,
   PROPERTY_FIELDS,
