@@ -38,49 +38,12 @@ This will display all available options and usage examples.
 
 ---
 
-## 👉 Supported Operators
+## 📚 Example Usage (Using Provided Sample Files)
 
-- `==`, `!=` → Equals, Not Equals
-- `<`, `<=`, `>`, `>=` → Numeric comparisons
-- `~=` → Contains (for descriptions)
-- `location <= lat,lng,radius` → Find properties within a distance
+You can test PropFilter immediately using the **example CSV** file included in the repository.
 
-### 💡 Notes
-- CSV files should have a header row matching the expected property fields.
-- JSON files should be an array of property objects.
-
----
-
-## 📚 Input Formats
-
-PropFilter supports both **CSV** and **JSON** formats for input data.
-
-### 🔢 CSV Example:
-```csv
-squareFootage,lighting,price,rooms,bathrooms,location,description,amenities
-4485,medium,470155,2,1,"(-7.25056, -56.540592)","House with renovated kitchen","{'garage': false, 'pool': false, 'garden': false, 'fireplace': false, 'basement': true}"
-```
-
-### 🔢 JSON Example:
-```json
-[
-  {
-    "squareFootage": 4485,
-    "lighting": "medium",
-    "price": 470155,
-    "rooms": 2,
-    "bathrooms": 1,
-    "location": [-7.25056, -56.540592],
-    "description": "House with renovated kitchen",
-    "amenities": {
-        "garage": false,
-        "pool": false,
-        "garden": false,
-        "fireplace": false,
-        "basement": true
-    }
-  }
-]
+```bash
+propfilter .devcontainer/sample.csv "price > 400000"
 ```
 
 ---
@@ -139,6 +102,53 @@ npm test
 ```
 
 GitHub Actions automatically run tests on every push to `main`.
+
+---
+
+## 👉 Supported Operators
+
+- `==`, `!=` → Equals, Not Equals
+- `<`, `<=`, `>`, `>=` → Numeric comparisons
+- `~=` → Contains (for descriptions)
+- `location <= lat,lng,radius` → Find properties within a distance
+
+### 💡 Notes
+- CSV files should have a header row matching the expected property fields.
+- JSON files should be an array of property objects.
+
+---
+
+## 📚 Input Formats
+
+PropFilter supports both **CSV** and **JSON** formats for input data.
+
+### 🔢 CSV Example:
+```csv
+squareFootage,lighting,price,rooms,bathrooms,location,description,amenities
+4485,medium,470155,2,1,"(-7.25056, -56.540592)","House with renovated kitchen","{'garage': false, 'pool': false, 'garden': false, 'fireplace': false, 'basement': true}"
+```
+
+### 🔢 JSON Example:
+```json
+[
+  {
+    "squareFootage": 4485,
+    "lighting": "medium",
+    "price": 470155,
+    "rooms": 2,
+    "bathrooms": 1,
+    "location": [-7.25056, -56.540592],
+    "description": "House with renovated kitchen",
+    "amenities": {
+        "garage": false,
+        "pool": false,
+        "garden": false,
+        "fireplace": false,
+        "basement": true
+    }
+  }
+]
+```
 
 ---
 
