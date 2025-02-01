@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { parse } from "csv-parse/sync";
+import { parse, CastingContext } from "csv-parse/sync";
 import { Property } from "../types/Property";
 import { NUMERIC_FIELDS } from "../constants/filtersConfig";
 
@@ -20,6 +20,28 @@ export async function readStdin(): Promise<string | null> {
 }
 
 /**
+ * Function to cast CSV values into the correct types (amenities, location, numbers, etc.).
+ */
+function csvCast(value: string, context: CastingContext): any {
+  const colName = String(context.column);
+  if (colName === "amenities") {
+    return JSON.parse(
+      value.replace(/'/g, '"').replace(/\b(true|false)\b/gi, (match) => match.toLowerCase()),
+    );
+  }
+
+  if (colName === "location") {
+    return value.replace(/[()]/g, "").split(",").map(Number);
+  }
+
+  if (NUMERIC_FIELDS.includes(colName as keyof Property)) {
+    return Number(value);
+  }
+
+  return value;
+}
+
+/**
  * Loads properties from a JSON or CSV file, or from raw input (stdin).
  */
 export function loadProperties(input?: string, filePath?: string): Property[] {
@@ -31,32 +53,28 @@ export function loadProperties(input?: string, filePath?: string): Property[] {
     return JSON.parse(input);
   }
 
-  if (filePath) {
-    if (!fs.existsSync(filePath)) {
-      throw new Error(`File not found: ${filePath}`);
-    }
-    const fileExt = path.extname(filePath).toLowerCase();
-    const rawData = fs.readFileSync(filePath, "utf-8");
-
-    if (fileExt === ".json") return JSON.parse(rawData);
-    if (fileExt === ".csv") {
-      return parse(rawData, {
-        columns: true,
-        skip_empty_lines: true,
-        cast: (value, context) => {
-          if (context.column === ("amenities" as keyof Property)) {
-            return JSON.parse(value.replace(/'/g, '"'));
-          }
-          if (context.column === ("location" as keyof Property)) {
-            return value.replace(/[()]/g, "").split(",").map(Number);
-          }
-          return NUMERIC_FIELDS.includes(context.column as keyof Property) ? Number(value) : value;
-        },
-      }) as Property[];
-    }
-
-    throw new Error("Unsupported file format. Use .json or .csv.");
+  if (!filePath) {
+    /* istanbul ignore next */
+    throw new Error("File path is undefined. Please provide a file path."); // Required by ts
   }
 
-  throw new Error("Unexpected error: No valid input method detected.");
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`File not found: ${filePath}`);
+  }
+
+  const fileExt = path.extname(filePath).toLowerCase();
+  const rawData = fs.readFileSync(filePath, "utf-8");
+
+  if (fileExt === ".json") {
+    return JSON.parse(rawData);
+  }
+
+  if (fileExt === ".csv") {
+    return parse(rawData, {
+      columns: true,
+      skip_empty_lines: true,
+      cast: csvCast,
+    }) as Property[];
+  }
+  throw new Error("Unsupported file format. Use .json or .csv.");
 }

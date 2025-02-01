@@ -31,7 +31,7 @@ describe("Filtering Logic", () => {
       bathrooms: 1,
       location: [40.7128, -74.006],
       description: "Cozy apartment",
-      amenities: {}, // No amenities
+      amenities: {},
     },
   ];
 
@@ -44,7 +44,6 @@ describe("Filtering Logic", () => {
     });
 
     it("throws error for invalid operator", () => {
-      // Using '@' should fail on the regex first
       expect(() => parseFilters(["lighting @ medium"])).toThrow(/Invalid filter syntax/);
     });
 
@@ -64,9 +63,7 @@ describe("Filtering Logic", () => {
       expect(() => parseFilters([""])).toThrow("Invalid filter syntax");
     });
 
-    // Extra coverage: substring operator used on a numeric field (or vice versa)
     it("throws error if '~=' operator is used with non-string value", () => {
-      // e.g. `rooms ~= 2`
       expect(() => parseFilters(["rooms ~= 2"])).toThrow(/Operator "~=" requires a string value/);
     });
   });
@@ -96,13 +93,12 @@ describe("Filtering Logic", () => {
     it("returns empty result if no property matches (price > 1000000)", () => {
       const filters = parseFilters(["price > 1000000"]);
       const result = applyFilters(sampleProperties, filters);
-      expect(result).toEqual([]); // No matches expected
+      expect(result).toEqual([]);
     });
 
     it("returns only the 500k property if price > 400000", () => {
       const filters = parseFilters(["price > 400000"]);
       const result = applyFilters(sampleProperties, filters);
-      // Only index [0] should match
       expect(result.map((p) => sampleProperties.indexOf(p))).toEqual([0]);
     });
 
@@ -115,14 +111,12 @@ describe("Filtering Logic", () => {
     it("returns two properties if price <= 300000", () => {
       const filters = parseFilters(["price <= 300000"]);
       const result = applyFilters(sampleProperties, filters);
-      // Should be index [1,2]
       expect(result.map((p) => sampleProperties.indexOf(p))).toEqual([1, 2]);
     });
 
     it("returns two properties if price < 400000", () => {
       const filters = parseFilters(["price < 400000"]);
       const result = applyFilters(sampleProperties, filters);
-      // Should be index [1,2]
       expect(result.map((p) => sampleProperties.indexOf(p))).toEqual([1, 2]);
     });
   });
@@ -134,14 +128,12 @@ describe("Filtering Logic", () => {
     it("filters by exact lighting match with '=='", () => {
       const filters = parseFilters(["lighting == medium"]);
       const result = applyFilters(sampleProperties, filters);
-      // Indices [0,2] have "medium"
       expect(result.map((p) => sampleProperties.indexOf(p))).toEqual([0, 2]);
     });
 
     it("filters out properties by lighting with '!='", () => {
       const filters = parseFilters(["lighting != medium"]);
       const result = applyFilters(sampleProperties, filters);
-      // Index [1] is "low"
       expect(result.map((p) => sampleProperties.indexOf(p))).toEqual([1]);
     });
   });
@@ -178,7 +170,6 @@ describe("Filtering Logic", () => {
     it("filters by included amenities (== pool)", () => {
       const filters = parseFilters(["amenities == pool"]);
       const result = applyFilters(sampleProperties, filters);
-      // Only index [0] has pool: true
       expect(result.map((p) => sampleProperties.indexOf(p))).toEqual([0]);
     });
 
@@ -191,17 +182,36 @@ describe("Filtering Logic", () => {
     it("filters by excluded amenities (!= pool)", () => {
       const filters = parseFilters(["amenities != pool"]);
       const result = applyFilters(sampleProperties, filters);
-      // Indices [1,2] do NOT have pool: true
       expect(result.map((p) => sampleProperties.indexOf(p))).toEqual([1, 2]);
     });
 
-    // Extra coverage: if "amenities" was tested with partial invalid shape
-    // or handle the property that has an empty object
     it("includes property that has an empty amenities object for '!= pool'", () => {
       const filters = parseFilters(["amenities != pool"]);
       const result = applyFilters(sampleProperties, filters);
-      // The property with empty object is #2, and it does NOT have pool: true => included
       expect(result.some((p) => p === sampleProperties[2])).toBe(true);
+    });
+  });
+
+  //
+  // 7) Location Filtering
+  //
+  describe("Location Filtering", () => {
+    it("filters properties within a given radius", () => {
+      const filters = parseFilters(["location <= 37.7749,-122.4194,100"]);
+      const result = applyFilters(sampleProperties, filters);
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it("excludes properties outside the given radius", () => {
+      const filters = parseFilters(["location >= 37.7749,-122.4194,5"]);
+      const result = applyFilters(sampleProperties, filters);
+      expect(result.length).toBe(1);
+    });
+
+    it("throws an error for invalid location format", () => {
+      expect(() => parseFilters(["location <= 37.7749,-122.4194"])).toThrow(
+        /Invalid location format/,
+      );
     });
   });
 });
