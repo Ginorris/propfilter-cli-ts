@@ -3,7 +3,7 @@
     "propfilter": "./dist/index.js"
   },
   "name": "propfilter-cli-ts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A CLI tool for filtering real estate properties by various criteria.",
   "main": "dist/index.js",
   "scripts": {
