@@ -1,11 +1,10 @@
+import { FilterCondition, Property } from "../types/Property";
 import {
-  FilterCondition,
-  Property,
-  PROPERTY_FIELDS,
-  VALID_LIGHTING_VALUES,
   VALID_OPERATORS,
+  VALID_LIGHTING_VALUES,
   NUMERIC_FIELDS,
-} from "../types/Property";
+  PROPERTY_FIELDS,
+} from "../constants/filtersConfig";
 
 function validateFieldExists(key: string): void {
   if (!PROPERTY_FIELDS.includes(key as keyof Property)) {

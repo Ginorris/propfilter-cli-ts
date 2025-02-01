@@ -1,4 +1,5 @@
-import { Property, NUMERIC_FIELDS, FilterCondition, FILTER_REGEX } from "../types/Property";
+import { Property, FilterCondition } from "../types/Property";
+import { NUMERIC_FIELDS, FILTER_REGEX } from "../constants/filtersConfig";
 import { validateCondition } from "./validation";
 
 /**

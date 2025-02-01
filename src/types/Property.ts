@@ -6,12 +6,7 @@ export type Property = {
   bathrooms: number;
   location: [number, number];
   description: string;
-  ammenities: Record<string, boolean>;
+  amenities: Record<string, boolean>;
 };
 
-export const NUMERIC_FIELDS: (keyof Property)[] = [
-  "squareFootage",
-  "price",
-  "rooms",
-  "bathrooms",
-];
+export type FilterCondition = { key: string; operator: string; value: any };
