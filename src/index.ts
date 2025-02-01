@@ -13,19 +13,75 @@ function setupCLI(): Command {
   program
     .name("propfilter")
     .description(chalk.green("A CLI tool for filtering real estate properties."))
-    .argument("<file>", "Path to JSON or CSV file (or use STDIN)")
-    .argument("[filters...]", "Filters in 'field operator value' format")
-    .option("--json", "Output results as raw JSON")
+    .argument("<file>", chalk.yellow("Path to JSON or CSV file (or use STDIN)"))
+    .argument("[filters...]", chalk.yellow("Filters in 'field operator value' format"))
+    .option("--json", chalk.yellow("Output results as raw JSON"))
     .on("--help", () => {
-      console.log("\n" + chalk.blue("Examples:"));
+      console.log("\n" + chalk.blue("📌 Usage Examples:"));
       console.log(chalk.yellow('  propfilter properties.json "price > 500000"'));
       console.log(chalk.yellow('  propfilter dataset.csv "lighting == high" "rooms >= 3"'));
-      console.log(chalk.yellow('  cat properties.json | propfilter --json "amenities == pool"'));
-      console.log("\n" + chalk.blue("Supported Operators:"));
-      console.log(chalk.cyan("  ==   !=   >   <   >=   <=   ~= (contains)"));
+      console.log(chalk.yellow('  propfilter dataset.csv "description ~= city center"'));
+      console.log(
+        chalk.yellow('  cat properties.json | propfilter --json "amenities == pool,garage"'),
+      );
+
+      console.log("\n" + chalk.blue("📍 Location Filtering:"));
+      console.log(
+        chalk.yellow(
+          '  propfilter dataset.csv "location <= 10,45,50" (Filter by latitude, longitude, and max distance in km)',
+        ),
+      );
+
+      console.log("\n" + chalk.blue("⚡ Supported Operators:"));
+      console.log(
+        chalk.cyan("  ==   !=   >   <   >=   <=   ~= (contains)  location <= lat,lng,distance"),
+      );
+
+      console.log("\n" + chalk.blue("💡 Notes:"));
+      console.log(chalk.magenta("  - Multiple filters use AND logic (all conditions must match)."));
+      console.log(chalk.magenta("  - Use quotes for filters containing spaces."));
+      console.log(chalk.magenta("  - The '--json' flag outputs raw JSON results."));
     });
 
   return program;
+}
+
+function displayResults(properties: any[]) {
+  if (properties.length === 0) {
+    console.log(chalk.yellow("No results found."));
+    return;
+  }
+
+  const table = new Table({
+    head: [
+      chalk.blue("SqFt"),
+      chalk.blue("Lighting"),
+      chalk.blue("Price"),
+      chalk.blue("Rooms"),
+      chalk.blue("Baths"),
+      chalk.blue("Amenities"),
+      chalk.blue("Description"),
+      chalk.blue("Location"),
+    ],
+    colWidths: [10, 10, 12, 8, 8, 20, 40],
+  });
+
+  properties.forEach((prop) => {
+    table.push([
+      prop.squareFootage,
+      prop.lighting,
+      `$${prop.price.toLocaleString()}`,
+      prop.rooms,
+      prop.bathrooms,
+      Object.keys(prop.amenities)
+        .filter((a) => prop.amenities[a])
+        .join(", "),
+      prop.description.length > 50 ? prop.description.substring(0, 47) + "..." : prop.description,
+      `[${prop.location.join(", ")}]`,
+    ]);
+  });
+
+  console.log(table.toString());
 }
 
 async function main() {
@@ -63,42 +119,6 @@ async function main() {
     console.error(`Error: ${(error as Error).message}`);
     process.exit(1);
   }
-}
-
-function displayResults(properties: any[]) {
-  if (properties.length === 0) {
-    console.log(chalk.yellow("No results found."));
-    return;
-  }
-
-  const table = new Table({
-    head: [
-      chalk.blue("SqFt"),
-      chalk.blue("Lighting"),
-      chalk.blue("Price"),
-      chalk.blue("Rooms"),
-      chalk.blue("Baths"),
-      chalk.blue("Amenities"),
-      chalk.blue("Description"),
-    ],
-    colWidths: [10, 10, 12, 8, 8, 20, 40],
-  });
-
-  properties.forEach((prop) => {
-    table.push([
-      prop.squareFootage,
-      prop.lighting,
-      `$${prop.price.toLocaleString()}`,
-      prop.rooms,
-      prop.bathrooms,
-      Object.keys(prop.amenities)
-        .filter((a) => prop.amenities[a])
-        .join(", "),
-      prop.description.length > 50 ? prop.description.substring(0, 47) + "..." : prop.description,
-    ]);
-  });
-
-  console.log(table.toString());
 }
 
 main();

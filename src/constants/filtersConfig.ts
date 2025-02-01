@@ -22,3 +22,16 @@ export const VALID_OPERATORS = ["==", "!=", "<=", ">=", "<", ">", "~="];
 // Regex capturing: (key)(operator)(value), allowing spaces around the operator
 // e.g. "price > 1", "description~=renovated", "amenities == pool,garage"
 export const FILTER_REGEX = new RegExp(`^(\\w+)\\s*(${VALID_OPERATORS.join("|")})\\s*(.+)$`);
+
+export const EARTH_RADIUS_KM = 6371;
+
+export const OPERATORS: Record<string, (a: any, b: any) => boolean> = {
+  "==": (a, b) => a === b,
+  "!=": (a, b) => a !== b,
+  ">": (a, b) => typeof a === "number" && a > b,
+  "<": (a, b) => typeof a === "number" && a < b,
+  ">=": (a, b) => typeof a === "number" && a >= b,
+  "<=": (a, b) => typeof a === "number" && a <= b,
+  "~=": (a, b) =>
+    typeof a === "string" && typeof b === "string" && a.toLowerCase().includes(b.toLowerCase()),
+};

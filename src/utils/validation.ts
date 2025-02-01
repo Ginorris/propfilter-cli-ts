@@ -1,9 +1,5 @@
 import { FilterCondition, Property } from "../types/Property";
-import {
-  VALID_LIGHTING_VALUES,
-  NUMERIC_FIELDS,
-  PROPERTY_FIELDS,
-} from "../constants/filtersConfig";
+import { VALID_LIGHTING_VALUES, NUMERIC_FIELDS, PROPERTY_FIELDS } from "../constants/filtersConfig";
 
 function validateFieldExists(key: string): void {
   if (!PROPERTY_FIELDS.includes(key as keyof Property)) {
@@ -16,6 +12,14 @@ function validateNumericField(key: string, value: any): void {
     if (typeof value !== "number" || isNaN(value)) {
       throw new Error(`Field "${key}" expects a numeric value, but got "${value}"`);
     }
+  }
+}
+
+function validateLocation(value: any): void {
+  if (!Array.isArray(value) || value.length !== 3 || value.some(isNaN)) {
+    throw new Error(
+      `Invalid location format. Expected "location <= lat,lng,radius", e.g. "location <= 10,45,5".`,
+    );
   }
 }
 
@@ -42,4 +46,8 @@ export function validateCondition({ key, operator, value }: FilterCondition): vo
   validateNumericField(key, value);
   validateSubstring(operator, value);
   validateLighting(key, value);
+
+  if (key === ("location" as keyof Property)) {
+    validateLocation(value);
+  }
 }

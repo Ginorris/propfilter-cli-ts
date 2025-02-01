@@ -44,8 +44,11 @@ export function loadProperties(input?: string, filePath?: string): Property[] {
         columns: true,
         skip_empty_lines: true,
         cast: (value, context) => {
-          if (context.column === "amenities") {
+          if (context.column === ("amenities" as keyof Property)) {
             return JSON.parse(value.replace(/'/g, '"'));
+          }
+          if (context.column === ("location" as keyof Property)) {
+            return value.replace(/[()]/g, "").split(",").map(Number);
           }
           return NUMERIC_FIELDS.includes(context.column as keyof Property) ? Number(value) : value;
         },

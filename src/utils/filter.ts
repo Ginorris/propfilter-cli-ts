@@ -1,5 +1,6 @@
 import { Property, FilterCondition } from "../types/Property";
-import { NUMERIC_FIELDS, FILTER_REGEX } from "../constants/filtersConfig";
+import { NUMERIC_FIELDS, FILTER_REGEX, OPERATORS } from "../constants/filtersConfig";
+import { calculateDistance } from "./distance";
 import { validateCondition } from "./validation";
 
 /**
@@ -41,9 +42,15 @@ function parseFilterValue(key: keyof Property, rawValue: string): any {
   if (NUMERIC_FIELDS.includes(key)) {
     return Number(rawValue);
   }
+
   if (key === ("amenities" as keyof Property)) {
     return rawValue.split(",").map((v) => v.trim());
   }
+
+  if (key === ("location" as keyof Property)) {
+    return rawValue.split(",").map(Number) as [number, number, number];
+  }
+
   return rawValue;
 }
 
@@ -78,18 +85,15 @@ function checkCondition(
     }
   }
 
-  const operators: Record<string, (a: any, b: any) => boolean> = {
-    "==": (a, b) => a === b,
-    "!=": (a, b) => a !== b,
-    ">": (a, b) => typeof a === "number" && a > b,
-    "<": (a, b) => typeof a === "number" && a < b,
-    ">=": (a, b) => typeof a === "number" && a >= b,
-    "<=": (a, b) => typeof a === "number" && a <= b,
-    "~=": (a, b) =>
-      typeof a === "string" && typeof b === "string" && a.toLowerCase().includes(b.toLowerCase()),
-  };
+  if (key === ("location" as keyof Property) && Array.isArray(propVal) && propVal.length === 2) {
+    const [propLat, propLng] = propVal;
+    const [targetLat, targetLng, maxDistance] = value;
+    const distance = calculateDistance(propLat, propLng, targetLat, targetLng);
 
-  return operators[operator]?.(propVal, value) ?? false;
+    return OPERATORS[operator]?.(maxDistance, distance) ?? false;
+  }
+
+  return OPERATORS[operator]?.(propVal, value) ?? false;
 }
 
 /**
